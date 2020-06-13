@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 
 {% block title %}
-    Blog
+    Tag "{{ tag.title }}"
 {% endblock %}
 
 {% block content %}
     <h1 class="mt-5">
-        Posts:
+        Posts with "{{ tag.title }}" tag:
     </h1>
 
     {% for post in posts %}
