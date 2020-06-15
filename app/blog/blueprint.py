@@ -34,6 +34,25 @@ def create_post():
     return render_template('blog/create_post.html', form=form)
 
 
+@blog.route('/<slug>/edit/', methods=['POST', 'GET'])
+def edit_post(slug):
+    post = Post.query.filter(Post.slug==slug).first()
+
+    print(request.form.items)
+
+    # FIXME: doesn't work for SelectMultipleField.
+    # AttributeError: 'str' object has no attribute '_sa_instance_state'
+    # There's probably smth wrong with db relations or PostForm.
+    if request.method == 'POST':
+        form = PostForm(request.form, obj=post)
+        form.populate_obj(post) # <- the problem is here
+        db.session.commit()
+        return redirect(url_for('blog.post_details', slug=post.slug))
+    
+    form = PostForm(obj=post)
+    return render_template('blog/edit_post.html', post=post, form=form)
+
+
 @blog.route('/')
 def index():
     q = request.args.get('q', '')
