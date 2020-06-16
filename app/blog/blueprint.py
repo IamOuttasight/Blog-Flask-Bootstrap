@@ -13,24 +13,33 @@ from app import db
 blog = Blueprint('blog', __name__, template_folder='templates')
 
 
+def add_tags_to_post(post, tags):
+    try:
+        if post.tags:
+            post.tags = []
+        for indx in tags:
+            tag = Tag.query.filter_by(id=indx).first()
+            post.tags.append(tag)
+        if post.id is None:
+            db.session.add(post)
+        db.session.commit()
+    except:
+        print('Something went wrong')
+
+
 @blog.route('/create/', methods=['POST', 'GET'])
 def create_post():
     if request.method == 'POST':
         title = request.form['title']
         body = request.form['body']
         tags = request.form.getlist('tags')
-        try:
-            post = Post(title=title, body=body)
-            for title in tags:
-                tag = Tag.query.filter(Tag.title==title).first()
-                post.tags.append(tag)
-            db.session.add(post)
-            db.session.commit()
-        except:
-            print('Something went wrong')
+        post = Post(title=title, body=body)
+        add_tags_to_post(post, tags)
+
         return redirect(url_for('blog.index'))
 
     form = PostForm()
+    form.tags.choices = [(tag.id, tag.title) for tag in Tag.query.all()]
     return render_template('blog/create_post.html', form=form)
 
 
@@ -38,25 +47,23 @@ def create_post():
 def edit_post(slug):
     post = Post.query.filter(Post.slug==slug).first()
 
-    print(request.form.items)
-
-    # FIXME: doesn't work for SelectMultipleField.
-    # AttributeError: 'str' object has no attribute '_sa_instance_state'
-    # There's probably smth wrong with db relations or PostForm.
     if request.method == 'POST':
-        form = PostForm(request.form, obj=post)
-        form.populate_obj(post) # <- the problem is here
-        db.session.commit()
+        post.title = request.form['title']
+        post.body = request.form['body']
+        tags = request.form.getlist('tags')
+        add_tags_to_post(post, tags)
+
         return redirect(url_for('blog.post_details', slug=post.slug))
     
     form = PostForm(obj=post)
+    form.tags.choices = [(tag.id, tag.title) for tag in Tag.query.all()]
+    form.tags.data = [tag.id for tag in post.tags]
     return render_template('blog/edit_post.html', post=post, form=form)
 
 
 @blog.route('/')
 def index():
     q = request.args.get('q', '')
-
     page = request.args.get('page')
 
     if page and page.isdigit():
@@ -70,7 +77,6 @@ def index():
         posts = Post.query.order_by(Post.created.desc())
 
     pages = posts.paginate(page=page, per_page=3)
-
     return render_template('blog/index.html', pages=pages, q=q)
 
 

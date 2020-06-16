@@ -10,7 +10,4 @@ from models import Tag
 class PostForm(Form):
     title = StringField('Title')
     body = TextAreaField('Body')
-    tags = SelectMultipleField(
-        'Tags',
-        choices=[(tag.title, tag.title) for tag in Tag.query.all()]
-        )
+    tags = SelectMultipleField('Tags', coerce=int)
