@@ -36,6 +36,19 @@ class Post(db.Model):
     def __repr__(self):
         return '<Post id: {}, Title: {}>'.format(self.id, self.title)
 
+    def add_tags(self, tags):
+        try:
+            if self.tags:
+                self.tags = []
+            for indx in tags:
+                tag = Tag.query.filter_by(id=indx).first()
+                self.tags.append(tag)
+            if self.id is None:
+                db.session.add(self)
+            db.session.commit()
+        except:
+            print('Something went wrong')
+
 
 class Tag(db.Model):
     id = db.Column(db.Integer, primary_key=True)

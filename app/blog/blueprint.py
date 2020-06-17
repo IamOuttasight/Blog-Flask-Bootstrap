@@ -13,20 +13,6 @@ from app import db
 blog = Blueprint('blog', __name__, template_folder='templates')
 
 
-def add_tags_to_post(post, tags):
-    try:
-        if post.tags:
-            post.tags = []
-        for indx in tags:
-            tag = Tag.query.filter_by(id=indx).first()
-            post.tags.append(tag)
-        if post.id is None:
-            db.session.add(post)
-        db.session.commit()
-    except:
-        print('Something went wrong')
-
-
 @blog.route('/create/', methods=['POST', 'GET'])
 def create_post():
     if request.method == 'POST':
@@ -34,7 +20,7 @@ def create_post():
         body = request.form['body']
         tags = request.form.getlist('tags')
         post = Post(title=title, body=body)
-        add_tags_to_post(post, tags)
+        post.add_tags(tags)
 
         return redirect(url_for('blog.index'))
 
@@ -51,7 +37,7 @@ def edit_post(slug):
         post.title = request.form['title']
         post.body = request.form['body']
         tags = request.form.getlist('tags')
-        add_tags_to_post(post, tags)
+        post.add_tags(tags)
 
         return redirect(url_for('blog.post_details', slug=post.slug))
     
