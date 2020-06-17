@@ -60,4 +60,4 @@ class Tag(db.Model):
         self.slug = slugify(self.title) + '-' + str(int(time()))
 
     def __repr__(self):
-        return '<Tag id: {}, Title: {}>'.format(self.id, self.title)
+        return self.title
