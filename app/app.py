@@ -39,6 +39,16 @@ class AdminMixin():
         return redirect(url_for('security.login', next=request.url))
 
 
+class BaseModelView(ModelView):
+    def on_model_change(self, form, model, is_created):
+        if type(model) is Post and not model.created:
+            model.gen_slug()
+            model.created = datetime.now()
+        else:
+            model.gen_slug()
+        return super().on_model_change(form, model, is_created)
+
+
 class AdminView(AdminMixin, ModelView):
     pass
 
@@ -47,9 +57,17 @@ class HomeAdminView(AdminMixin, AdminIndexView):
     pass
 
 
+class PostAdminView(AdminMixin, BaseModelView):
+    form_columns = ['tags', 'title', 'body']
+
+
+class TagAdminView(AdminMixin, BaseModelView):
+    form_columns = ['title', 'posts']
+
+
 admin = Admin(app, 'FlaskApp', url='/', index_view=HomeAdminView(name='Home'))
-admin.add_view(AdminView(Post, db.session))
-admin.add_view(AdminView(Tag, db.session))
+admin.add_view(PostAdminView(Post, db.session))
+admin.add_view(TagAdminView(Tag, db.session))
 
 ### Flask Security ###
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)

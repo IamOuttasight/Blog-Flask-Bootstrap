@@ -61,7 +61,11 @@ class Tag(db.Model):
 
     def __init__(self, *args, **kwargs):
         super(Tag, self).__init__(*args, **kwargs)
-        self.slug = slugify(self.title) + '-' + str(int(time()))
+        self.gen_slug()
+    
+    def gen_slug(self):
+        if self.title:
+            self.slug = slugify(self.title) + '-' + str(int(time()))
 
     def __repr__(self):
         return self.title
