@@ -3,6 +3,7 @@ from flask import render_template
 from flask import request
 from flask import redirect
 from flask import url_for
+from flask_security import login_required
 
 from models import Post
 from models import Tag
@@ -14,6 +15,7 @@ blog = Blueprint('blog', __name__, template_folder='templates')
 
 
 @blog.route('/create/', methods=['POST', 'GET'])
+@login_required
 def create_post():
     if request.method == 'POST':
         title = request.form['title']
@@ -30,6 +32,7 @@ def create_post():
 
 
 @blog.route('/<slug>/edit/', methods=['POST', 'GET'])
+@login_required
 def edit_post(slug):
     post = Post.query.filter(Post.slug==slug).first()
 
