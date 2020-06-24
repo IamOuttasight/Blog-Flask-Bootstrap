@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Blog
+{% endblock %}
+
+{% block content %}
+    <h1>Posts:</h1>
+
+    {% for post in pages.items %}
+        <div class="card text-center mt-4">
+            <div class="card-header">
+                {{ post.created }}
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">{{ post.title }}</h5>
+                <p class="card-text">{{ post.body|truncate(15) }}</p>
+                <a href="{{ url_for('blog.post_details', slug=post.slug) }}" class="btn btn-primary">Read</a>
+            </div>
+            <div class="card-footer">
+                Tags:
+                {% for tag in post.tags %}
+                    <a href="{{ url_for('blog.tag_details', slug=tag.slug) }}">
+                        {{ tag.title }}
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+
+    <nav>
+        <ul class="pagination justify-content-center mt-4">
+            <li class="page-item {% if not pages.has_prev %}disabled{% endif %}">
+                <a class="page-link" href="{% if q %}?q={{ q }}&{% else %}?{% endif %}page={{ pages.prev_num }}"><<</a>
+            </li>
+            {% for page in pages.iter_pages() %}
+                <li class="page-item {% if page == pages.page %}active{% endif %}" aria-current="page">
+                    <a class="page-link" {% if page %} href="{% if q %}?q={{ q }}&{% else %}?{% endif %}page={{ page }}" {% endif %}>
+                        {% if page %}{{ page }}{% else %}...{% endif %} <span class="sr-only">(current)</span>
+                    </a>
+                </li>
+            {% endfor %}
+            <li class="page-item {% if not pages.has_next %}disabled{% endif %}">
+                <a class="page-link" href="{% if q %}?q={{ q }}&{% else %}?{% endif %}page={{ pages.next_num }}">>></a>
+            </li>
+        </ul>
+    </nav>
+
+{% endblock %}

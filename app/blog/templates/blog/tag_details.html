@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Tag "{{ tag.title }}"
+{% endblock %}
+
+{% block content %}
+    <h1 class="mt-5">
+        Posts with "{{ tag.title }}" tag:
+    </h1>
+
+    {% for post in posts %}
+        <div class="card text-center mt-5">
+            <div class="card-header">
+                {{ post.created }}
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">{{ post.title }}</h5>
+                <p class="card-text">{{ post.body|truncate(15) }}</p>
+                <a href="{{ url_for('blog.post_details', slug=post.slug) }}" class="btn btn-primary">Read</a>
+            </div>
+            <div class="card-footer">
+                Tags:
+                {% for tag in post.tags %}
+                    <a href="{{ url_for('blog.tag_details', slug=tag.slug) }}">
+                        {{ tag.title }}
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}
