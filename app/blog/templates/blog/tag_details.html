@@ -9,7 +9,7 @@
         Posts with "{{ tag.title }}" tag:
     </h1>
 
-    {% for post in posts %}
+    {% for post in pages.items %}
         <div class="card text-center mt-5">
             <div class="card-header">
                 {{ post.created }}
@@ -29,4 +29,13 @@
             </div>
         </div>
     {% endfor %}
+
+    {% if pages.items %}
+        {% include 'blog/_pagination.html' %}
+    {% else %}
+        <div class="mt-5">
+            <p>No posts found.</p>
+        </div>
+    {% endif %}
+
 {% endblock %}

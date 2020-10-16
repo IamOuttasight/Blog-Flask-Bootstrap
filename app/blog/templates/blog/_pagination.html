@@ -1,0 +1,17 @@
+<nav>
+    <ul class="pagination justify-content-center mt-4">
+        <li class="page-item {% if not pages.has_prev %}disabled{% endif %}">
+            <a class="page-link" href="{% if q %}?q={{ q }}&{% else %}?{% endif %}page={{ pages.prev_num }}"><<</a>
+        </li>
+        {% for page in pages.iter_pages() %}
+            <li class="page-item {% if page == pages.page %}active{% endif %}" aria-current="page">
+                <a class="page-link" {% if page %} href="{% if q %}?q={{ q }}&{% else %}?{% endif %}page={{ page }}" {% endif %}>
+                    {% if page %}{{ page }}{% else %}...{% endif %} <span class="sr-only">(current)</span>
+                </a>
+            </li>
+        {% endfor %}
+        <li class="page-item {% if not pages.has_next %}disabled{% endif %}">
+            <a class="page-link" href="{% if q %}?q={{ q }}&{% else %}?{% endif %}page={{ pages.next_num }}">>></a>
+        </li>
+    </ul>
+</nav>

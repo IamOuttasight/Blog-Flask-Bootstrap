@@ -12,12 +12,16 @@ from flask_admin.contrib.sqla import ModelView
 from flask_security import SQLAlchemyUserDatastore
 from flask_security import Security
 from flask_security import current_user
+from flask_wtf.csrf import CSRFProtect
 
 from config import Configuration
 
 
 app = Flask(__name__)
 app.config.from_object(Configuration)
+
+### CSRF ###
+csrf = CSRFProtect(app)
 
 ### ORM ###
 db = SQLAlchemy(app)

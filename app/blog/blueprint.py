@@ -50,22 +50,28 @@ def edit_post(slug):
     return render_template('blog/edit_post.html', post=post, form=form)
 
 
-@blog.route('/')
-def index():
-    q = request.args.get('q', '')
+# posts must be BaseQuery
+def _paginate(page, posts):
     page = request.args.get('page')
-
     if page and page.isdigit():
         page = int(page)
     else:
         page = 1
+    pages = posts.paginate(page=page, per_page=3)
+    return pages
+
+
+@blog.route('/')
+def index():
+    q = request.args.get('q', '')
+    page = request.args.get('page')
 
     if q:
         posts = Post.query.filter(Post.title.contains(q) | Post.body.contains(q))
     else:
         posts = Post.query.order_by(Post.created.desc())
 
-    pages = posts.paginate(page=page, per_page=3)
+    pages = _paginate(page, posts)
     return render_template('blog/index.html', pages=pages, q=q)
 
 
@@ -78,6 +84,14 @@ def post_details(slug):
 
 @blog.route('/tag/<slug>/')
 def tag_details(slug):
+    page = request.args.get('page')
     tag = Tag.query.filter(Tag.slug==slug).first_or_404()
-    posts = tag.posts.all()
-    return render_template('blog/tag_details.html', tag=tag, posts=posts)
+    posts = tag.posts.filter()
+    pages = _paginate(page, posts)
+    return render_template('blog/tag_details.html', tag=tag, pages=pages)
+
+
+@blog.route('/tags/')
+def tags_list():
+    tags = Tag.query.all()
+    return render_template('blog/tags_list.html', tags=tags)
