@@ -48,7 +48,7 @@ class BaseModelView(ModelView):
         if type(model) is Post and not model.created:
             model.gen_slug()
             model.created = datetime.now()
-        else:
+        elif type(model) is Tag:
             model.gen_slug()
         return super().on_model_change(form, model, is_created)
 
@@ -69,9 +69,19 @@ class TagAdminView(AdminMixin, BaseModelView):
     form_columns = ['title', 'posts']
 
 
+class UserAdminView(AdminMixin, BaseModelView):
+    form_columns = ['email', 'active', 'roles']
+
+
+class RoleAdminView(AdminMixin, BaseModelView):
+    form_columns = ['name', 'description', 'users']
+
+
 admin = Admin(app, 'FlaskApp', url='/', index_view=HomeAdminView(name='Home'))
 admin.add_view(PostAdminView(Post, db.session))
 admin.add_view(TagAdminView(Tag, db.session))
+admin.add_view(UserAdminView(User, db.session))
+admin.add_view(RoleAdminView(Role, db.session))
 
 ### Flask Security ###
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
