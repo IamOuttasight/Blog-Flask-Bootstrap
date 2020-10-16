@@ -7,14 +7,15 @@ from flask_security import login_required
 
 from models import Post
 from models import Tag
-from .forms import PostForm
 from app import db
+from .forms import PostForm
+from .forms import TagForm
 
 
 blog = Blueprint('blog', __name__, template_folder='templates')
 
 
-@blog.route('/create/', methods=['POST', 'GET'])
+@blog.route('/create_post/', methods=['POST', 'GET'])
 @login_required
 def create_post():
     if request.method == 'POST':
@@ -89,6 +90,20 @@ def tag_details(slug):
     posts = tag.posts.filter()
     pages = _paginate(page, posts)
     return render_template('blog/tag_details.html', tag=tag, pages=pages)
+
+
+@blog.route('/create_tag/', methods=['POST', 'GET'])
+@login_required
+def create_tag():
+    if request.method == 'POST':
+        title = request.form['title']
+        tag = Tag(title=title)
+        db.session.add(tag)
+        db.session.commit()
+        return redirect(url_for('blog.tags_list'))
+
+    form = TagForm()
+    return render_template('blog/create_tag.html', form=form)
 
 
 @blog.route('/tags/')

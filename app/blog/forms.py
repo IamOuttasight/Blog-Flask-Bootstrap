@@ -11,3 +11,7 @@ class PostForm(Form):
     title = StringField('Title')
     body = TextAreaField('Body')
     tags = SelectMultipleField('Tags', coerce=int)
+
+
+class TagForm(Form):
+    title = StringField('Title')

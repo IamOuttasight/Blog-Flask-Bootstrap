@@ -8,6 +8,7 @@ from flask_migrate import MigrateCommand
 from flask_script import Manager
 from flask_admin import Admin
 from flask_admin import AdminIndexView
+from flask_admin.menu import MenuLink
 from flask_admin.contrib.sqla import ModelView
 from flask_security import SQLAlchemyUserDatastore
 from flask_security import Security
@@ -82,6 +83,7 @@ admin.add_view(PostAdminView(Post, db.session))
 admin.add_view(TagAdminView(Tag, db.session))
 admin.add_view(UserAdminView(User, db.session))
 admin.add_view(RoleAdminView(Role, db.session))
+admin.add_link(MenuLink(name='Logout', category='', url="/logout"))
 
 ### Flask Security ###
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
