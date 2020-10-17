@@ -8,7 +8,7 @@
     <h1 class="mt-5">
         {{ post.title }}
     </h1>
-
+    <p>Created by {{ post.author }}</p>
     <div class="tags">
         {% for tag in tags %}
             <a href="{{ url_for('blog.tag_details', slug=tag.slug) }}">
@@ -17,9 +17,23 @@
         {% endfor %}
     </div>
 
+    <div class="mt-5">
+        {% if current_user.username == post.author or current_user.has_role('admin') %}
+            <a href="{{ url_for('blog.edit_post', slug=post.slug) }}">Edit post</a>
+        {% endif %}
+    </div>
+
     <div class="main-content">
-        <p class="mt-5">
+        <p class="mt-1">
             {{ post.body }}
         </p>
     </div>
+
+    <form action="{{ url_for('blog.delete_post', slug=post.slug) }}" method="post">
+        <a href="{{ url_for('blog.index') }}">Back to blog</a>
+        {% if current_user.username == post.author or current_user.has_role('admin') %}
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="submit" value="Delete" class="btn btn-danger">
+        {% endif %}
+    </form>
 {% endblock %}

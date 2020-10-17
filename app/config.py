@@ -12,15 +12,24 @@ class Configuration(object):
 if __name__ == "__main__":
     from app import user_datastore
     from models import User, Role
+    import getpass
+    import sys
 
-    email = str(input("Enter email:\n"))
-    password = str(input("Enter password:\n"))
-
-    user = Role.query.filter(User.email==email).first()
-    if user:
-        raise Exception("Email is already taken")
+    username = str(input("Enter Username: "))
+    email = str(input("Enter email: "))
+    password = getpass.getpass("Enter password: ") #str(input("Enter password: "))
+    confirm = getpass.getpass("Confirm password: ")
+    
+    if password != confirm:
+        sys.exit("ERROR: Confirmation failed.")
+    user_by_username = Role.query.filter(User.username==username).first()
+    user_by_email = Role.query.filter(User.email==email).first()
+    if user_by_username:
+        sys.exit("ERROR: Username is already taken.")
+    elif user_by_email:
+        sys.exit("ERROR: Email is already taken.")
     else:
-        user = user_datastore.create_user(email=email, password=password)
+        user = user_datastore.create_user(username=username, email=email, password=password)
 
     role = Role.query.filter(Role.name=='admin').first()
     if not role:

@@ -71,7 +71,7 @@ class TagAdminView(AdminMixin, BaseModelView):
 
 
 class UserAdminView(AdminMixin, BaseModelView):
-    form_columns = ['email', 'active', 'roles']
+    form_columns = ['username', 'email', 'active', 'roles']
 
 
 class RoleAdminView(AdminMixin, BaseModelView):

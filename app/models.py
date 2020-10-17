@@ -1,4 +1,5 @@
 from app import db
+from app import current_user
 from time import time
 from datetime import datetime
 from slugify import slugify
@@ -20,6 +21,7 @@ class Post(db.Model):
     title = db.Column(db.String(140))
     slug = db.Column(db.String(140), unique=True)
     body = db.Column(db.Text)
+    author = db.Column(db.String(30))
     created = db.Column(db.DateTime)
 
     tags = db.relationship(
@@ -32,6 +34,7 @@ class Post(db.Model):
         super(Post, self).__init__(*args, **kwargs)
         self.gen_slug()
         self.created = datetime.now()
+        self.author = current_user.username
 
     def gen_slug(self):
         if self.title:
@@ -58,10 +61,12 @@ class Tag(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100))
     slug = db.Column(db.String(100))
+    author = db.Column(db.String(30))
 
     def __init__(self, *args, **kwargs):
         super(Tag, self).__init__(*args, **kwargs)
         self.gen_slug()
+        self.author = current_user.username
     
     def gen_slug(self):
         if self.title:
@@ -82,6 +87,7 @@ users_roles = db.Table(
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer(), primary_key=True)
+    username = db.Column(db.String(30), unique=True)
     email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(255))
     active = db.Column(db.Boolean())
