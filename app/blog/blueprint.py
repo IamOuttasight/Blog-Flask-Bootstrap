@@ -59,17 +59,21 @@ def index():
 @blog.route('/create_post/', methods=['POST', 'GET'])
 @login_required
 def create_post():
-    if request.method == 'POST':
+    form = PostForm(request.form)
+    form.tags.choices = [(tag.id, tag.title) for tag in Tag.query.all()]
+    
+    if request.method == 'POST' and form.validate():
         title = request.form['title']
         body = request.form['body']
         tags = request.form.getlist('tags')
         post = Post(title=title, body=body)
         post.add_tags(tags)
+        db.session.add(post)
+        db.session.commit()
 
+        flash('Post created', 'success')
         return redirect(url_for('blog.index'))
 
-    form = PostForm()
-    form.tags.choices = [(tag.id, tag.title) for tag in Tag.query.all()]
     return render_template('blog/create_post.html', form=form)
 
 
@@ -85,17 +89,19 @@ def post_details(slug):
 @is_author_or_admin
 def edit_post(slug):
     post = Post.query.filter(Post.slug==slug).first_or_404()
+    form = PostForm(request.form)
+    form.tags.choices = [(tag.id, tag.title) for tag in Tag.query.all()]
 
-    if request.method == 'POST':
+    if request.method == 'POST' and form.validate():
         post.title = request.form['title']
         post.body = request.form['body']
         tags = request.form.getlist('tags')
         post.add_tags(tags)
-
+        db.session.commit()
         return redirect(url_for('blog.post_details', slug=post.slug))
     
-    form = PostForm(obj=post)
-    form.tags.choices = [(tag.id, tag.title) for tag in Tag.query.all()]
+    form.title.data = post.title
+    form.body.data = post.body
     form.tags.data = [tag.id for tag in post.tags]
     return render_template('blog/edit_post.html', post=post, form=form)
 
@@ -114,14 +120,14 @@ def delete_post(slug):
 @blog.route('/create_tag/', methods=['POST', 'GET'])
 @login_required
 def create_tag():
-    if request.method == 'POST':
+    form = TagForm(request.form)
+    if request.method == 'POST' and form.validate():
         title = request.form['title']
         tag = Tag(title=title)
         db.session.add(tag)
         db.session.commit()
         return redirect(url_for('blog.tags_list'))
 
-    form = TagForm()
     return render_template('blog/create_tag.html', form=form)
 
 

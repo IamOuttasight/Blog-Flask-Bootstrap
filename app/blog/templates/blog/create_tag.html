@@ -7,14 +7,12 @@
 {% block content %}
     <h1>Create new tag:</h1>
 
+    {% from 'blog/_formtemplates.html' import render_field %}
     <form action="{{ url_for('blog.create_tag') }}" method="post">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        {% for field in form %}
-            <div class="form-group">
-                {{ field.label(class='control-label') }}
-                {{ field(class='form-control') }}
-            </div>    
-        {% endfor %}
+        <div class="form-group">
+            {{ render_field(form.title, class_='form-control') }}
+        </div>
         <a href="{{ url_for('blog.index') }}">Cancel</a>
         <button type="submit" class="btn btn-success">Create</button>
     </form>

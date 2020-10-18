@@ -13,4 +13,11 @@
             </a>
         </div>
     {% endfor %}
+
+    {% if not tags %}
+        <div class="mt-5">
+            <p>No tags found.</p>
+        </div>
+    {% endif %}
+
 {% endblock %}
