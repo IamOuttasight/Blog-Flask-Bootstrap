@@ -13,7 +13,9 @@ from flask_admin.contrib.sqla import ModelView
 from flask_security import SQLAlchemyUserDatastore
 from flask_security import Security
 from flask_security import current_user
+from flask_security.forms import RegisterForm
 from flask_wtf.csrf import CSRFProtect
+from wtforms import StringField, validators
 
 from config import Configuration
 
@@ -78,6 +80,10 @@ class RoleAdminView(AdminMixin, BaseModelView):
     form_columns = ['name', 'description', 'users']
 
 
+class ExtendedRegisterForm(RegisterForm):
+    username = StringField('Username', [validators.length(min=3, max=30)])
+
+
 admin = Admin(app, 'FlaskApp', url='/', index_view=HomeAdminView(name='Home'))
 admin.add_view(PostAdminView(Post, db.session))
 admin.add_view(TagAdminView(Tag, db.session))
@@ -87,4 +93,4 @@ admin.add_link(MenuLink(name='Logout', category='', url="/logout"))
 
 ### Flask Security ###
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
-security = Security(app, user_datastore)
+security = Security(app, user_datastore, register_form=ExtendedRegisterForm)

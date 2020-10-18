@@ -70,8 +70,7 @@ def create_post():
         post.add_tags(tags)
         db.session.add(post)
         db.session.commit()
-
-        flash('Post created', 'success')
+        flash('Post created successfully', 'success')
         return redirect(url_for('blog.index'))
 
     return render_template('blog/create_post.html', form=form)
@@ -98,6 +97,7 @@ def edit_post(slug):
         tags = request.form.getlist('tags')
         post.add_tags(tags)
         db.session.commit()
+        flash('Post edited successfully', 'success')
         return redirect(url_for('blog.post_details', slug=post.slug))
     
     form.title.data = post.title
@@ -126,6 +126,7 @@ def create_tag():
         tag = Tag(title=title)
         db.session.add(tag)
         db.session.commit()
+        flash('Tag created successfully', 'success')
         return redirect(url_for('blog.tags_list'))
 
     return render_template('blog/create_tag.html', form=form)
