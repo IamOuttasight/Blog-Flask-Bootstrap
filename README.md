@@ -8,6 +8,7 @@ Flask-Admin. Users with the admin role can manage all of the posts and tags desp
 * Frontend framework - Bootstrap v4.5.2
 * As DBMS was chosen MySQL v5.7.31
 * SQLAlchemy v1.3.17
+* CKEditor v4.15.0, basic
 ## Installation:
 1. At first, you should install _mysql-server_ and _libmysqlclient-dev_ if you don't have it:  
 ```sudo apt-get install mysql-server libmysqlclient-dev```
