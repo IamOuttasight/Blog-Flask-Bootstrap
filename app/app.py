@@ -81,7 +81,11 @@ class RoleAdminView(AdminMixin, BaseModelView):
 
 
 class ExtendedRegisterForm(RegisterForm):
-    username = StringField('Username', [validators.length(min=3, max=30)])
+    username = StringField('Username', validators=[
+        validators.length(min=3, max=30),
+        validators.Regexp(r'^[a-zA-Z0-9_-]+$',
+            message='Only letters a-z and A-Z, digits and symbols -_ are allowed.')
+        ])
 
 
 admin = Admin(app, 'FlaskApp', url='/', index_view=HomeAdminView(name='Home'))
